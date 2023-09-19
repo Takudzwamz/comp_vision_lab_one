@@ -37,6 +37,16 @@ def classify_traffic_light(image_path):
     img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
     img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
     
+    # Create a circular mask to focus on the central region
+    h, w = img.shape[0], img.shape[1] # height and width of the image
+    center = (w//2, h//2) # center of the image
+    radius = min(w, h)//2 # radius of the circle
+    mask = np.zeros((h, w), dtype=np.uint8) # create a black mask
+    cv2.circle(mask, center, radius, (1, 1, 1), thickness=-1) # draw a white circle on the mask
+    
+    # Apply the mask
+    img = cv2.bitwise_and(img, img, mask=mask)
+    
     # Convert the image to the HSV color space
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     
@@ -107,6 +117,3 @@ print("Red signals:", len(red_signals))
 print("Green signals:", len(green_signals))
 print("Yellow signals:", len(yellow_signals))
 print("Unclassifiable signals:", len(unclassifiable_signals))
-
-
-
